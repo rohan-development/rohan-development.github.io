@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rohan's Cycling Adventures</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+            background: #f8fafc;
+            color: #1f2937;
+        }
+
+        h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .trip-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .trip-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.15s ease;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .trip-card h2 {
+            margin-top: 0;
+        }
+
+        footer {
+            margin-top: 3rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚴 Rohan's Cycling Adventures</h1>
+    <p class="subtitle">
+        Long-distance cycling trips, route notes, photos, and ride reports.
+    </p>
+
+    <div class="trip-grid">
+        <a class="trip-card" href="/pei/">
+            <h2>Prince Edward Island</h2>
+            <p>
+                A cycling journey/fundraiser for prostate cancer treatment and research across PEI, featuring the Confederation Trail,
+                coastal scenery, and trip highlights.
+            </p>
+        </a>
+
+        <!-- Future trips -->
+        <!--
+        <a class="trip-card" href="/cabot-trail/">
+            <h2>Cabot Trail</h2>
+            <p>Coming soon.</p>
+        </a>
+        -->
+    </div>
+
+    <footer>
+        More rides and adventures will be added over time.
+    </footer>
+</body>
+</html>

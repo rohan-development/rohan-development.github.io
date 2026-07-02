@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toronto to PEI Bike Trip Tracker</title>
+    <style>
+        /* Base Reset & Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f7f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        /* --- PROGRESS BAR SECTION --- */
+        .tracker-section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .progress-container {
+            width: 100%;
+            padding: 25px 0 10px 0; /* Extra top padding so bike doesn't clip */
+        }
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            /* -------------------------------------------------------- */
+            /* DAILY UPDATE: Change this percentage to move the bike!   */
+            width: 40%; 
+            /* -------------------------------------------------------- */
+            background-color: #3498db;
+            border-radius: 4px;
+            position: relative;
+            transition: width 1s ease-in-out;
+        }
+        .bike-icon {
+            position: absolute;
+            right: -15px;
+            top: -28px;
+            font-size: 26px;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* --- PHOTO GALLERY SECTION --- */
+        .gallery-heading {
+            margin: 30px 0 15px 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 180px;
+            background-color: #e2e8f0;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item img:hover {
+            transform: scale(1.05);
+        }
+        .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        /* --- DAILY LOG / BLOG SECTION --- */
+        .log-entry {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        .log-date {
+            font-size: 0.9rem;
+            color: #95a5a6;
+            font-weight: 600;
+        }
+        .log-title {
+            color: #2c3e50;
+            margin: 2px 0 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Toronto ➔ PEI Tracker</h1>
+            <p class="subtitle">Biking from Toronto to PEI to raise awareness for prostate cancer</p>
+<a href="https://secure.trilliumgiving.ca/site/TR?pg=personal&fr_id=1560&px=1622164"
+   target="_blank"
+   rel="noopener noreferrer"
+   style="font-size: 1.5rem; font-weight: bold;">
+  Click Here to Donate
+</a>        
+</header>
+
+        <div class="tracker-section">
+            <div class="stats">
+                <span id="start-point">Toronto, ON</span>
+                <span id="progress-percent">35% Completed</span>
+                <span id="end-point">Saint Peter's Harbour, PEI</span>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-track">
+                    <div class="progress-bar" id="bikeBar">
+                        <span class="bike-icon">🚴💨</span>
+                    </div>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 15px; font-size: 0.95rem; color: #555;">
+                <strong>Current Status: </strong>Staying with Mariette in Lyster!         </p>
+        </div>
+
+<!--
+        <h2 class="gallery-heading">Snapshots From the Road</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=500&q=80" alt="Bike packing gear">
+                <div class="caption">Day 1: All packed up in TO</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1541614101331-1a5a3a194e92?auto=format&fit=crop&w=500&q=80" alt="Country road">
+                <div class="caption">Day 3: Waterfront Trail views</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=500&q=80" alt="Morning mist">
+                <div class="caption">Day 5: Early morning departures</div>
+            </div>
+        </div>
+-->
+        <h2 class="gallery-heading">Daily Ride Log</h2>
+   <!--     
+        <div class="log-entry">
+            <div class="log-date">June 23, 2026</div>
+            <h3 class="log-title">Day 3: Kingston to Cornwall</h3>
+            <p>A beautiful flat ride along the St. Lawrence River today. Clocked 140km with a sweet tailwind pushing us most of the afternoon. Camped out right by the water tonight.</p>
+        </div>
+
+        <div class="log-entry">
+            <div class="log-date">June 22, 2026</div>
+            <h3 class="log-title">Day 2: Cobourg to Kingston</h3>
+            <p>Some rolling hills through Prince Edward County. Stopped for a massive lunch to fuel the final stretch. A bit of rain near the end but we made it safe.</p>
+        </div>
+-->
+
+<!-- numbers section -->
+<!-- ===== IMPACT SECTION ===== -->
+<style>
+.impact {
+    padding: 80px 20px;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.impact-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.impact-header span {
+    display: inline-block;
+    color: #16a34a;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.impact-header h2 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: #111827;
+}
+
+.impact-header p {
+    margin-top: 15px;
+    color: #6b7280;
+    font-size: 1.15rem;
+}
+
+.impact-grid {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.impact-card {
+    background: white;
+    border-radius: 20px;
+    padding: 45px 35px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transition: all .25s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.impact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+.impact-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.impact-label {
+    text-transform: uppercase;
+    font-size: .9rem;
+    letter-spacing: .12em;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.impact-number {
+    font-size: clamp(3.2rem, 8vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1;
+    margin: 20px 0;
+}
+
+.km {
+    color: #16a34a;
+}
+
+.money {
+    color: #7c3aed;
+}
+
+.impact-subtext {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+@media (max-width:700px){
+    .impact{
+        padding:60px 20px;
+    }
+
+    .impact-card{
+        padding:35px 25px;
+    }
+}
+</style>
+
+<section class="impact">
+
+    <div class="impact-header">
+        <span>THE IMPACT</span>
+        <h2>Every Kilometre Counts</h2>
+        <p>Tracking the journey and the difference we're making together.</p>
+    </div>
+
+    <div class="impact-grid">
+
+        <div class="impact-card">
+            <div class="impact-icon">🚴</div>
+            <div class="impact-label">Total Kilometres Ridden</div>
+            <div class="impact-number km"
+                 data-target="811"
+                 data-prefix=""
+                 data-suffix=" km">0 km</div>
+            <div class="impact-subtext">
+                Every kilometre helps spread awareness.
+            </div>
+        </div>
+
+        <div class="impact-card">
+            <div class="impact-icon">❤️</div>
+            <div class="impact-label">Total Funds Raised</div>
+            <div class="impact-number money"
+                 data-target="2600"
+                 data-prefix="$"
+                 data-suffix="">$0</div>
+            <div class="impact-subtext">
+                Supporting Prostate Cancer with <a href="https://secure.trilliumgiving.ca/site/TR?pg=personal&fr_id=1560&px=1622164">Trillium Health</a>.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+const counters = document.querySelectorAll(".impact-number");
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        const el = entry.target;
+        const target = Number(el.dataset.target);
+        const prefix = el.dataset.prefix || "";
+        const suffix = el.dataset.suffix || "";
+
+        let start = 0;
+        const duration = 1800;
+        const startTime = performance.now();
+
+        function animate(now) {
+            const progress = Math.min((now - startTime) / duration, 1);
+            const value = Math.floor(progress * target);
+
+            el.textContent =
+                prefix +
+                value.toLocaleString() +
+                suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                el.textContent =
+                    prefix +
+                    target.toLocaleString() +
+                    suffix;
+            }
+        }
+
+        requestAnimationFrame(animate);
+        observer.unobserve(el);
+    });
+}, { threshold: 0.4 });
+
+counters.forEach(counter => observer.observe(counter));
+</script>
+<!-- ===== END IMPACT SECTION ===== -->
+
+<div class="log-entry">
+            <div class="log-date">June 30, 2026</div>
+            <h3 class="log-title">Day 8: Richmond</h3>
+            <p>Today was a great day. We start strong again with another 12 eggs, scrambled of course. We biked through some super nice paved trails again
+before getting into the countryside. Eventually, the paved trails were no more, and we found ourselves on a dirt road. While it was slightly tougher, and 
+uphil, we managed to make it to Richmond. We hit 60 KM/H on our descent into Richmond, and saw literal smoke coming off Rohan's brakes when we stopped 
+(no joke, we really did). We were welcomed by Guy, who lives in Richmond, and is an amazing cook. We had some amazing deer meat, which he hunted himself, 
+as well as greens, potatoes, and to top it off, some excellent panacota. At the end of meal, as is tradition in Quebec, we had a plate of fresh cheese.</p>
+        </div>
+
+<div class="log-entry">
+            <div class="log-date">June 29, 2026</div>
+            <h3 class="log-title">Day 7: Granby</h3>
+            <p>Today was a long day. We started strong with 12 scrambled eggs, and some turkey bacon. 
+After Theo's bike trouble yesterday, we left Montreal at around 10:30, and headed for Granby.
+Leaving Montreal, we biked through some of the best bike paths we'd ever seen. They were super straight, flat, paved, and completely
+isolated from cars. We are starting to get to the point where things are starting to hurt, but the end is still quite far.
+In Granby, we are staying with Andre, a warmshowers host with a beautiful mini house in his backyard. Tomorrow, we are aiming
+for Richmond.</p>
+        </div>
+
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/7/Backyard.JPG" alt="Andre's backyard house!">
+                <div class="caption">Andre's backyard house!</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/pei/images/7/Eggs.JPG" alt="Eggs">
+                <div class="caption">Breakfast eggs!</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/7/Leaving.JPG" alt="Leaving">
+                <div class="caption">Biking off Montreal Island</div>
+</div>
+<div class="gallery-item">
+                <img src="/pei/images/7/Mountain.JPG" alt="Mountain">
+                <div class="caption">The mountain we didn't bike up</div>
+</div>
+<div class="gallery-item">
+                <img src="/pei/images/7/Path.JPG" alt="Path">
+                <div class="caption">One of the many awesome paths!</div>
+</div>
+</div>
+
+<div class="log-entry">
+            <div class="log-date">June 28, 2026</div>
+            <h3 class="log-title">Day 6: Montreal</h3>
+            <p>Yesterday we chose to make it all the way to Montreal. We were forced to make a pitstop at McDonald’s to make all our sandwiches for the day which set us back an hour.
+
+While we were eating our sandwiches (after passing the Ontario/Quebec border), we were welcomed into a Mel and Willem's backyard where we shared lovely stories and they provided us with plenty of food.
+They were absolutely lovely people, and genuinely interested in our journey!
+
+Unfortunately, this did set us back another hour (though it was totally worth it). With just about 65 km left, the rain began to come down hard (it was a torrential downpour). While putting the tent in a garbage bag, Theo’s bike fell and his pannier rack broke. Luckily, nothing important got wet, and we were able to do laundry and dry off when we arrived in Rohan’s apartment in Montreal.
+
+The rain finally stopped and we made it to Montreal by 7:15 pm with spirits at an all time low. On Monday (today now) we go to bike shops to get a new pannier rack.</p>
+        </div>
+
+
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/6/Couple.jpg" alt="Couple">
+                <div class="caption">Mel and Willem!</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/pei/images/6/Quebec.JPG" alt="Quebec">
+                <div class="caption">Entering la belle provence!</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/6/Snacks.JPG" alt="Snacks">
+                <div class="caption">The snacks (and smile) Mel and Willem gave us!</div>
+</div>
+<div class="gallery-item">
+                <img src="/pei/images/6/Rain.jpg" alt="Rain">
+                <div class="caption">A picture of us in the rain</div>
+</div>
+</div>
+
+
+<div class="log-entry">
+            <div class="log-date">June 27, 2026</div>
+            <h3 class="log-title">Day 5: Cornwall</h3>
+            <p>Day 5 was smooth sailing for the most part (our legs are taking a toll)... A late
+ start at 9 am meant we were playing catch up all day, but thankfully the weather gods 
+were on our side once again. Almost all of the ride today was wonderfully flat, 
+with negligible head winds and other bad omens.
+
+We met a few riders doing the same ride today from Brockville to Cornwall, and they were
+More than happy to chat!
+
+Tonight we stay with Tish and Terry in Cornwall, who was kind enough to provide a delicious 
+roasted chicken with ice cream for dessert. We plan to head all the way to Montreal 
+tomorrow (134 km) and take a rest day there. </p>
+        </div>
+
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/5/Egg.jpg" alt="Egg">
+                <div class="caption">Theo eating an egg with a stick</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/pei/images/5/Town.JPG" alt="Town">
+                <div class="caption">Biking through Brockville</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/5/Sandwich.JPG" alt="Sandwich">
+                <div class="caption">(Another) one of our many sandwich spots!</div>
+</div>
+</div>
+
+
+
+<div class="log-entry">
+            <div class="log-date">June 26, 2026</div>
+            <h3 class="log-title">Day 4: Brockville</h3>
+            <p>Today was an extremely lucky day. We woke up at 5:30 initially, but we pushed the wakeup by an hour since it was pouring rain, in hopes of dodging the rain. 
+The morning started with egg and english muffin sandwiches from Richard, which were super good and kept us fueled! When we passed through Kingston we met up with our friend Evan. Throughout the day,
+we encountered some mild rain, but mostly stayed dry. Much of today was biked on a trail beside the Thousand Islands Parkway, which was awesome. Yesterday's cheese and turkey sandwiches were a success
+and we stopped along the trail on a nice rocky outcrop to eat the second batch. We arrived in Brockville around 3 pm, where we were greeted by our Warmshower hosts Jacky and Ralf. They are extremely kind,
+they provided us with showers, dinner, and several hours of conversations, including their cycling adventures across the world! Shortly after our arrival it began to pour rain. </p>
+        </div>
+
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/4/House.jpg" alt="House">
+                <div class="caption">Cool house in the Thousand Islands region</div>
+            </div>
+
+
+            <div class="gallery-item">
+                <img src="/pei/images/4/Lunch.JPG" alt="Sandwich">
+                <div class="caption">One of our many sandwich spots!</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/4/Ralf.JPG" alt="Ralf">
+                <div class="caption">Ralf and Jacky, our wonderful hosts!</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/4/Evan.JPG" alt="Evan">
+                <div class="caption">Our friend Evan in Kingston!</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/4/Turtle.JPG" alt="Turtle">
+                <div class="caption">A turtle we saw crossing the street</div>
+</div>
+</div>
+
+<div class="log-entry">
+            <div class="log-date">June 25, 2026</div>
+            <h3 class="log-title">Day 3: Amherstview</h3>
+            <p>We planned for rain in the morning, but instead we were greeted with clear skies and sun! A cool train on the side of the road caught our attention, so 
+naturally we had to climb it. As soon as we got to Amherstview around 3, the rain started coming down while getting groceries. Tonight we stay with Richard, who 
+is letting us sleep in his garage (and let us take a shower) while the rain comes down (fingers crossed it's over by tomorrow). Richard is a super awesome host, we talked to him about 
+his biking adventures and he helped us with some route planning for 2 hours! We plan to change up the diet tomorrow with chicken and cheese 
+sandwiches so we will be sure to give a rating! </p>
+        </div>
+
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/3/Train.jpg" alt="Train">
+                <div class="caption">Train we saw while biking!</div>
+            </div>
+
+
+            <div class="gallery-item">
+                <img src="/pei/images/3/Lunch.JPG" alt="Sandwich">
+                <div class="caption">One of our many sandwich spots!</div>
+</div>           
+ <div class="gallery-item">
+                <img src="/pei/images/3/Richard.JPG" alt="Richard">
+                <div class="caption">Richard who let us stay in his garage!</div>
+</div>
+ <div class="gallery-item">
+                <img src="/pei/images/3/KD.JPG" alt="KD">
+                <div class="caption">Making Kraft Dinner with our stove!</div>
+</div>
+</div>
+<div class="log-entry">
+            <div class="log-date">June 24, 2026</div>
+            <h3 class="log-title">Day 2: Belleville</h3>
+            <p>Today was a rest day. We started by eating 12 eggs, then rode a total of 80 KM to Belleville. Shoutout to the Crate Marine Belleville for letting us shower and do laundry!</p>
+           <p>We met a lot of cool people today. While biking we met Clyde and Tia who were finishing a coast-to-coast bike ride. </p>
+           <p>We also met Tom, who worked at the Crate Marine and is training for an Iron Man this summer. After we were clean, we knocked on doors and Madeleine and Abi were kind enough to 
+	let us pitch our tent in their yard for the night!
+        </div>
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/2/Tom.jpg" alt="Tom">
+                <div class="caption">Tom from the Crate Marine</div>
+            </div>
+<div class="gallery-item">
+                <img src="/pei/images/2/Clyde.jpg" alt="Clyde">
+                <div class="caption">Clyde and Tia whom we met while biking!</div>
+            </div>
+<div class="gallery-item">
+                <img src="/pei/images/2/Scenery.jpg" alt="Scenery">
+                <div class="caption">Scenery</div>
+            </div>
+<div class="gallery-item">
+                <img src="/pei/images/2/AM.JPEG" alt="Abbey">
+                <div class="caption">Abi and Madeleine who let us pitch our tent</div>
+            </div>
+<div class="gallery-item">
+                <img src="/pei/images/2/Tent.JPG" alt="Tent">
+                <div class="caption">Our tent setup in the yard</div>
+            </div>
+</div>
+        <div class="log-entry">
+            <div class="log-date">June 23, 2026</div>
+            <h3 class="log-title">Day 1: Cobourg</h3>
+            <p>Navigated our way out of Toronto early this morning. Had a long, 140 KM day, through semi-hilly terrain. Made it to Cobourg where we were welcomed by Sheila and Ken. <p /p> The adventure officially begins!</p>
+        </div>
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/pei/images/1/Scenery.jpg" alt="Scenery">
+                <div class="caption">Scenery outside Oshawa</div>
+            </div>
+<div class="gallery-item">
+                <img src="/pei/images/1/Beaches.JPG" alt="Beaches">
+                <div class="caption">Lunch outside the beaches!</div>
+            </div>
+<div class="gallery-item">
+                <img src="/pei/images/1/Leaving.jpg" alt="Leaving">
+                <div class="caption">Toronto Sendoff!</div>
+            </div>
+
+</div>
+<!--
+<div class="log-entry">
+            <div class="log-date">June 24, 2026</div>
+            <h3 class="log-title">Day 2: Belleville</h3>
+            <p>Today was a rest day. We started by eating 12 eggs, then rode a total of 80 KM to Belleville. Shoutout to the Crate Marine Belleville for letting us shower and do laundry!</p>
+	   <p>We met a lot of cool people today. While biking we met Clyde and Tia who were finishing a coast-to-coast bike ride. </p>		
+	   <p>We also met Tom, who worked at the Crate Marine and is training for an Iron Man this summer.
+        </div>
+<div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/images/2/Tom.jpg" alt="Tom">
+                <div class="caption">Tom from the Crate Marine</div>
+            </div>
+<div class="gallery-item">
+                <img src="/images/2/Clyde.jpg" alt="Clyde">
+                <div class="caption">Clyde and Tia whom we met while biking!</div>
+            </div>
+<div class="gallery-item">
+                <img src="/images/2/Scenery.jpg" alt="Scenery">
+                <div class="caption">Scenery</div>
+            </div>
+
+</div>
+-->
+    </div>
+
+    <script>
+        // Simple script to automatically pull the percentage from the CSS and display it in the text.
+        window.addEventListener('DOMContentLoaded', () => {
+            const bar = document.getElementById('bikeBar');
+            const percentText = document.getElementById('progress-percent');
+            if(bar && percentText) {
+                percentText.textContent = bar.style.width + "";
+            }
+        });
+    </script>
+</body>
+</html>
